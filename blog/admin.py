@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Profile
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'author', 'status')
@@ -10,3 +10,9 @@ class PostAdmin(admin.ModelAdmin):
     date_hierarchy = ('created')
 
 admin.site.register(Post, PostAdmin)
+
+
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'dob', 'photo')
+
+admin.site.register(Profile, ProfileAdmin)

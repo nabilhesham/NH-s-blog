@@ -6,3 +6,12 @@ html {
 body {
   font-family: 'Lucida Casaul', 'Comic Sans MS'
 }
+
+.navbar-img {
+  height: 35px;
+  width: 30px;
+  float: left ;
+  background-size: auto 100%;
+  margin-top: -5px;
+  margin-right: 5px;
+}

@@ -20,4 +20,5 @@ from blog import views
 urlpatterns = [
     path('<p_id>/<p_slug>', views.post_detail, name='post_detail'),
     path('post_create', views.post_create, name='post_create'),
+    path('edit_profile',views.edit_profile, name='edit_profile'),
 ]

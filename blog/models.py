@@ -5,7 +5,14 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='published')
+
 class Post(models.Model):
+    objects = models.Manager()   # the default model manager
+    published = PublishedManager()   # the customed model manager
+
     STATUS_CHOICES = (
         ('draft','Draft'),
         ('published','Published'),
@@ -30,3 +37,12 @@ class Post(models.Model):
 def pre_save_slug(sender, **kwargs):
     slug = slugify(kwargs['instance'].title)
     kwargs['instance'].slug = slug
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dob = models.DateField(null=True, blank=True)
+    photo = models.ImageField(null=True, blank=True)
+
+    def __str__(self):
+        return "Profile of User {}".format(self.user.username)

@@ -15,11 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path ,include
+from django.contrib.auth import views as auth_views
 from blog import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.post_list, name = 'post_list'),
     path('blog/', include('blog.urls')),
     path('login/', views.user_login, name = 'user_login'),
+    path('logout/', views.user_logout, name = 'user_logout'),
+    path('', include('django.contrib.auth.urls')),
+    path('register/',views.user_registration, name='user_registration'),
 ]
+
+
+if settings.DEBUG :
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
