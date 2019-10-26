@@ -25,10 +25,16 @@ class Post(models.Model):
     created     =       models.DateTimeField(auto_now_add = True)
     updated     =       models.DateTimeField(auto_now = True)
     status      =       models.CharField(max_length = 10, choices = STATUS_CHOICES, default = 'draft')
+    likes       =       models.ManyToManyField(User, related_name='likes', blank=True)
 
+    class Meta :
+        ordering = ['-id']
 
     def __str__(self):
         return self.title
+
+    def total_likes(self):
+        return self.likes.count()
 
     def get_absolute_url(self):
         return reverse("post_detail", args=[self.id, self.slug])

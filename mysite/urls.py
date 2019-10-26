@@ -28,6 +28,8 @@ urlpatterns = [
     path('logout/', views.user_logout, name = 'user_logout'),
     path('', include('django.contrib.auth.urls')),
     path('register/',views.user_registration, name='user_registration'),
+    path('social-auth/', include('social_django.urls', namespace="social")),
+    path('like/', views.like_post, name='like_post'),
 ]
 
 

@@ -1,25 +1,93 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from datetime import datetime
 from .models import Post, Profile
 from .forms import PostCreateForm, UserLoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.template.loader import render_to_string
 
 def post_list(request):
-    posts = Post.published.all()
+    post_list = Post.published.all()
+    query = request.GET.get('q')
+    if query :
+        post_list = Post.published.filter(
+            Q(title__icontains=query)|
+            Q(author__username=query)|
+            Q(body__icontains=query)
+            # title__icontains=query
+        )
+    paginator = Paginator(post_list, 5)
+    page = request.GET.get('page')
+    try:
+        posts = paginator.get_page(page)
+    except PageNotAnInteger:
+        posts = paginator.get_page(1)
+    except EmptyPage :
+        posts = paginator.get_page(paginator.num_pages)
+
+    if page is None :
+        start_index = 0
+        end_index = 7
+    else:
+        (start_index, end_index) = proper_pagination(posts, index=4)
+
+    page_range = list(paginator.page_range)[start_index:end_index]
+
     context = {
-        'posts':posts
+        'posts':posts,
+        'page_range':page_range,
     }
+
     return render(request, 'blog/post_list.html', context)
+
+def proper_pagination(posts, index):
+    start_index = 0
+    end_index = 7
+    if posts.number > index:
+        start_index = posts.number - index
+        end_index = start_index + end_index
+    return (start_index,end_index)
+
 
 def post_detail(request, p_id, p_slug):
     post = get_object_or_404(Post, pk=p_id, slug=p_slug)
+    is_liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        is_liked = True
+
     context = {
-        'post':post
+        'post':post,
+        'is_liked':is_liked,
+        'total_likes':post.total_likes(),
     }
     return render(request, 'blog/post_detail.html', context)
+
+def like_post(request):
+    # post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    is_liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        is_liked = False
+    else:
+        post.likes.add(request.user)
+        is_liked = True
+    return HttpResponseRedirect(post.get_absolute_url())
+    # context = {
+    #     'post':post,
+    #     'is_liked':is_liked,
+    #     'total_likes':post.total_likes(),
+    # }
+    # if request.is_ajax():
+    # #     html = render_to_string('blog/like_section.html', context, request=request)
+    #     # return JsonResponse({'form':html})
+    #     return JsonResponse(context)
+
+
 
 def post_create(request):
     if request.method == 'POST':
