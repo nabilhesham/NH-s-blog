@@ -1,8 +1,17 @@
 from django import forms
-from .models import Post, Profile
+from .models import Post, Profile, Comment
 from django.contrib.auth.models import User
 
 class PostCreateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = {
+            'title',
+             'body',
+              'status',
+              }
+
+class PostEditForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = {
@@ -51,3 +60,9 @@ class ProfileEditForm(forms.ModelForm):
     class Meta :
         model = Profile
         exclude = ('user',)
+
+class CommentForm(forms.ModelForm):
+    content = forms.CharField(label="", widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Enter Text Here !!', 'rows':'4', 'cols':'50'}))
+    class Meta :
+        model = Comment
+        fields = {'content',}

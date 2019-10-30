@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Profile
+from .models import Post, Profile, Images, Comment
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'author', 'status')
@@ -16,3 +16,11 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'dob', 'photo')
 
 admin.site.register(Profile, ProfileAdmin)
+
+
+class ImagesAdmin(admin.ModelAdmin):
+    list_display = ('post', 'image')
+
+admin.site.register(Images, ImagesAdmin)
+
+admin.site.register(Comment)

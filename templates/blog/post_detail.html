@@ -3,16 +3,26 @@
 {% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
 
 {% block content %}
+{% include 'blog/alerts.html' %}
+
 
 <h3>{{ post.title }}</h3>
 <small>Post created by: {{ post.author }}</small>
 <hr>
 <p>{{ post.body }}</p>
+<div class="row gallery">
+  {% for p in post.images_set.all %}
+    <div class="col-md-3">
+      <img src="{{ p.image.url }}" alt="Image Not Found" class="img-thumbnail">
+    </div>
+  {% endfor %}
+</div>
 
-<!-- <div id="like-section" >
+<div class="like-section" >
   {% include 'blog/like_section.html' %}
-</div> -->
-{{ total_likes }} Like{{ total_likes | pluralize }}
+</div>
+
+<!-- {{ total_likes }} Like{{ total_likes | pluralize }}
 {% if request.user.is_authenticated %}
 <form  action="{% url 'like_post' %}" method="post">
   {% csrf_token %}
@@ -22,6 +32,24 @@
     <button id="like" type="submit" name="post_id" value="{{ post.id }}" class="btn btn-primary">Like</button>
   {% endif %}
 </form>
+{% endif %} -->
+
+{% if request.user == post.author %}
+<div class="section-1" style="float:right;">
+  <a href="{% url 'post_edit' post.id %}">
+    <button type="button" class="btn btn-outline-success">Edit</button>
+  </a>
+  <a href="{% url 'post_delete' post.id %}" id="delete">
+    <button type="button" class="btn btn-danger">Delete</button>
+  </a>
+</div>
 {% endif %}
+
+<br><br>
+<hr>
+
+<div class="main-comment-section container-fluid">
+  {% include 'blog/comments.html' %}
+</div>
 
 {% endblock %}

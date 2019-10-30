@@ -18,6 +18,8 @@ from django.urls import path
 from blog import views
 
 urlpatterns = [
+    path('<post_id>/post_edit', views.post_edit, name='post_edit'),
+    path('<post_id>/post_delete', views.post_delete, name='post_delete'),
     path('<p_id>/<p_slug>', views.post_detail, name='post_detail'),
     path('post_create', views.post_create, name='post_create'),
     path('edit_profile',views.edit_profile, name='edit_profile'),
