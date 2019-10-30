@@ -62,6 +62,10 @@ def post_detail(request, p_id, p_slug):
     if post.likes.filter(id=request.user.id).exists():
         is_liked = True
 
+    is_favourite = False
+    if post.favourite.filter(id=request.user.id).exists():
+        is_favourite = True
+
     if request.method == 'POST':
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
@@ -81,12 +85,32 @@ def post_detail(request, p_id, p_slug):
         'total_likes':post.total_likes(),
         'comments': comments,
         'comment_form': comment_form,
+        'is_favourite': is_favourite,
     }
     if request.is_ajax():
         html = render_to_string('blog/comments.html', context, request=request)
         return JsonResponse({'form':html})
 
     return render(request, 'blog/post_detail.html', context)
+
+
+def favourite_post(request, id):
+    post = get_object_or_404(Post, id=id)
+    if post.favourite.filter(id=request.user.id).exists():
+        post.favourite.remove(request.user)
+        is_favourite = False
+    else:
+        post.favourite.add(request.user)
+        is_favourite = True
+    return HttpResponseRedirect(post.get_absolute_url())
+
+def  favourite_post_list(request):
+    user = request.user
+    favourite_posts = user.favourite.all()
+    context = {
+        'favourite_posts': favourite_posts,
+    }
+    return render(request, 'blog/favourite_post_list.html', context)
 
 def like_post(request):
     # post = get_object_or_404(Post, id=request.POST.get('id'))
@@ -109,7 +133,6 @@ def like_post(request):
     #     return JsonResponse({'form':html})
 
     return HttpResponseRedirect(post.get_absolute_url())
-
 
 
 def post_create(request):

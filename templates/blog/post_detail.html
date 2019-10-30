@@ -22,6 +22,18 @@
   {% include 'blog/like_section.html' %}
 </div>
 
+<div class="favourite-section" >
+  {% if is_favourite %}
+    <a href="{% url 'favourite_post' id=post.id %}">
+        <i class="fas fa-heart fa-lg"></i>
+    </a>
+  {% else %}
+    <a href="{% url 'favourite_post' id=post.id %}">
+        <i class="far fa-heart fa-lg"></i>
+    </a>
+  {% endif %}
+</div>
+
 <!-- {{ total_likes }} Like{{ total_likes | pluralize }}
 {% if request.user.is_authenticated %}
 <form  action="{% url 'like_post' %}" method="post">
@@ -47,9 +59,12 @@
 
 <br><br>
 <hr>
-
-<div class="main-comment-section container-fluid">
-  {% include 'blog/comments.html' %}
-</div>
+{% if post.restrict_comment %}
+  <h6 style="color:red;">{{ post.author|capfirst }} Has Restricted The Comments .</h6>
+{% else %}
+  <div class="main-comment-section container-fluid">
+    {% include 'blog/comments.html' %}
+  </div>
+{% endif %}
 
 {% endblock %}

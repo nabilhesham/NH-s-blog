@@ -9,7 +9,8 @@ class PostCreateForm(forms.ModelForm):
             'title',
              'body',
               'status',
-              }
+               'restrict_comment',
+               }
 
 class PostEditForm(forms.ModelForm):
     class Meta:
@@ -18,6 +19,7 @@ class PostEditForm(forms.ModelForm):
             'title',
              'body',
               'status',
+              'restrict_comment',
               }
 
 class UserLoginForm(forms.Form):
